@@ -3,7 +3,9 @@
 	This question requires you to use a stack to achieve a bracket match
 */
 
-// I AM NOT DONE
+use std::f32::consts::E;
+
+
 #[derive(Debug)]
 struct Stack<T> {
 	size: usize,
@@ -32,13 +34,22 @@ impl<T> Stack<T> {
 	}
 	fn pop(&mut self) -> Option<T> {
 		// TODO
-		None
-	}
-	fn peek(&self) -> Option<&T> {
 		if 0 == self.size {
-			return None;
+			None
 		}
-		self.data.get(self.size - 1)
+		else {
+			self.size -= 1;
+			self.data.pop()
+		}
+	}
+	fn peek(&mut self) -> Option<&T> {
+		if self.size == 0 {
+			return None
+		} else {
+			self.size -= 1;
+			self.data.pop();
+		}
+		Some(&self.data[self.size - 1])
 	}
 	fn peek_mut(&mut self) -> Option<&mut T> {
 		if 0 == self.size {
@@ -101,8 +112,24 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 
 fn bracket_match(bracket: &str) -> bool
 {
-	//TODO
-	true
+	let mut stack = Stack::new();
+    for ch in bracket.chars() {
+        if ch == '(' || ch == '[' || ch == '{' {
+            stack.push(ch);
+        } else if ch == ')' || ch == ']' || ch == '}' {
+            if let Some(top) = stack.pop() {
+                if (top == '(' && ch != ')') || 
+                   (top == '[' && ch != ']') || 
+                   (top == '{' && ch != '}') {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+    stack.is_empty()
+	//TODO	
 }
 
 #[cfg(test)]
