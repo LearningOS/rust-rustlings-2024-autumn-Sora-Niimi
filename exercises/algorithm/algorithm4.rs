@@ -3,7 +3,7 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -51,24 +51,47 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        self.root = Self::insert_recursive(self.root.take(), value);
+    }
+    fn insert_recursive(node: Option<Box<TreeNode<T>>>, value: T) -> Option<Box<TreeNode<T>>> {
+        match node {
+            Some(mut current_node) => {
+                match value.cmp(&current_node.value) {
+                    Ordering::Less => {
+                        current_node.left = Self::insert_recursive(current_node.left.take(), value);
+                    }
+                    Ordering::Greater => {
+                        current_node.right =
+                            Self::insert_recursive(current_node.right.take(), value);
+                    }
+                    Ordering::Equal => {
+                        // Do nothing if the value is already present (ignore duplicates)
+                    }
+                }
+                Some(current_node)
+            }
+            None => Some(Box::new(TreeNode::new(value))),
+        }
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        Self::search_recursive(&self.root, value)
+    }
+    fn search_recursive(node: &Option<Box<TreeNode<T>>>, value: T) -> bool {
+        match node {
+            Some(current_node) => match value.cmp(&current_node.value) {
+                Ordering::Less => Self::search_recursive(&current_node.left, value),
+                Ordering::Greater => Self::search_recursive(&current_node.right, value),
+                Ordering::Equal => true,
+            },
+            None => false,
+        }
     }
 }
 
-impl<T> TreeNode<T>
-where
-    T: Ord,
-{
-    // Insert a node into the tree
-    fn insert(&mut self, value: T) {
-        //TODO
-    }
-}
+
 
 
 #[cfg(test)]
